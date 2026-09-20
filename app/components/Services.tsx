@@ -1,17 +1,16 @@
 "use client";
 
-import Image from "next/image";
 import { useState } from "react";
 import { ChevronLeftIcon, ChevronRightIcon } from "./icons";
+import ServiceArt, { type ServiceArtKind } from "./ServiceArt";
 
 type Service = {
+  label: string;
   title: string;
   description: string;
   features: string[];
   tags: string[];
-  // How the shared photo is framed for this service: zoom level + focal point.
-  zoom: number;
-  origin: string;
+  art: ServiceArtKind;
 };
 
 export default function Services({ services }: { services: Service[] }) {
@@ -21,7 +20,7 @@ export default function Services({ services }: { services: Service[] }) {
 
   return (
     <div>
-      <div className="flex items-center justify-between border-b border-black/15 pb-3 mb-8">
+      <div className="flex items-center justify-between gap-2 border-b border-black/15 pb-3 mb-8">
         <button
           type="button"
           onClick={() => go(-1)}
@@ -30,9 +29,22 @@ export default function Services({ services }: { services: Service[] }) {
         >
           <ChevronLeftIcon className="size-5" />
         </button>
-        <span className="text-xs tracking-widest text-black/40">
-          {String(index + 1).padStart(2, "0")} / {String(services.length).padStart(2, "0")}
-        </span>
+        <div className="flex flex-wrap justify-center gap-x-8 gap-y-2">
+          {services.map((item, i) => (
+            <button
+              key={item.label}
+              type="button"
+              onClick={() => setIndex(i)}
+              aria-current={i === index}
+              className={`text-sm cursor-pointer transition-colors ${
+                i === index ? "text-black font-medium" : "text-black/40 hover:text-black/70"
+              }`}
+            >
+              <span className="text-xs mr-1.5 text-black/30">{String(i + 1).padStart(2, "0")}</span>
+              <span className={i === index ? "underline underline-offset-[10px] decoration-2" : ""}>{item.label}</span>
+            </button>
+          ))}
+        </div>
         <button
           type="button"
           onClick={() => go(1)}
@@ -60,19 +72,14 @@ export default function Services({ services }: { services: Service[] }) {
           </div>
         </div>
 
-        <div className="relative aspect-[4/3] rounded-lg overflow-hidden bg-black">
-          <Image
-            src="/services/ice.jpg"
-            alt="Black and white macro photograph of ice and frost over stones"
-            fill
-            sizes="(min-width: 768px) 512px, 100vw"
-            className="object-cover transition-[transform,transform-origin] duration-700 ease-out"
-            style={{ transform: `scale(${service.zoom})`, transformOrigin: service.origin }}
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" aria-hidden="true" />
-          <span className="absolute bottom-3 right-5 text-7xl md:text-8xl font-medium text-white/80 select-none" aria-hidden="true">
-            {String(index + 1).padStart(2, "0")}
-          </span>
+        <div
+          className="relative aspect-[4/3] rounded-lg overflow-hidden bg-[#1a1a1a]"
+          style={{
+            backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.07) 1px, transparent 1px)",
+            backgroundSize: "18px 18px",
+          }}
+        >
+          <ServiceArt key={service.art} kind={service.art} className="art-in absolute inset-0 size-full" />
         </div>
       </div>
     </div>
